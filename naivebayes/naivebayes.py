@@ -1,4 +1,5 @@
 import numpy as np
+import random
 
 
 def setup():
@@ -32,7 +33,7 @@ def get_lang_histogram(language_chars):
     return language_histogram
 
 def prior():
-    return 1.0/3.0
+    return (10 + 0.5)/(30 + 3 * 0.5)
 
 def print_latex_tabular(language_histogram):
     all_characters = ['space']+[chr(ord('a') + i) for i in range(0,26)]
@@ -151,13 +152,75 @@ def p6():
     pass
 
 def p7():
+    # Training set
     e09 = read_in_language_files('e', 0, 9)
     s09 = read_in_language_files('s', 0, 9)
     j09 = read_in_language_files('j', 0, 9)
 
-    e1019 = read_in_language_files('e', 10, 19)
-    s1019 = read_in_language_files('s', 10, 19)
-    j1019 = read_in_language_files('j', 10, 19)
+    theta_e = get_class_conditional_probability_vector(get_lang_histogram(e09))
+    theta_s = get_class_conditional_probability_vector(get_lang_histogram(s09))
+    theta_j = get_class_conditional_probability_vector(get_lang_histogram(j09))
+
+    # Testing set
+    e1019 = [read_in_language_files('e', i, i) for i in range(10,20)]
+    s1019 = [read_in_language_files('s', i, i) for i in range(10,20)]
+    j1019 = [read_in_language_files('j', i, i) for i in range(10,20)]
+
+    # Classify
+    for y in [e1019, s1019, j1019]:
+        for x in y:
+            p_x_given_e = calc_likelihood_of_x_given_lang(x, theta_e)
+            p_x_given_s = calc_likelihood_of_x_given_lang(x, theta_s)
+            p_x_given_j = calc_likelihood_of_x_given_lang(x, theta_j)
+
+            p_e_given_x = p_x_given_e + np.log(prior())
+            p_s_given_x = p_x_given_s + np.log(prior())
+            p_j_given_x = p_x_given_j + np.log(prior())
+
+            language_posteriors = [p_e_given_x, p_s_given_x, p_j_given_x]
+            language_names = ['English', 'Spanish', 'Japanese']
+
+            print('x is most likely', language_names[language_posteriors.index(max(language_posteriors))])
+
+def p8():
+    # Training set
+    e09 = read_in_language_files('e', 0, 9)
+    s09 = read_in_language_files('s', 0, 9)
+    j09 = read_in_language_files('j', 0, 9)
+
+    theta_e = get_class_conditional_probability_vector(get_lang_histogram(e09))
+    theta_s = get_class_conditional_probability_vector(get_lang_histogram(s09))
+    theta_j = get_class_conditional_probability_vector(get_lang_histogram(j09))
+
+    # Testing set
+    e1019 = [read_in_language_files('e', i, i) for i in range(10,20)]
+    s1019 = [read_in_language_files('s', i, i) for i in range(10,20)]
+    j1019 = [read_in_language_files('j', i, i) for i in range(10,20)]
+
+    # Classify
+    for y in [e1019, s1019, j1019]:
+        for x in y:
+            # Shuffle the words to prove order doesn't matter
+            words = x.split()
+            random.shuffle(words)
+            x = ' '.join(words)
+
+            # Classify
+            p_x_given_e = calc_likelihood_of_x_given_lang(x, theta_e)
+            p_x_given_s = calc_likelihood_of_x_given_lang(x, theta_s)
+            p_x_given_j = calc_likelihood_of_x_given_lang(x, theta_j)
+
+            p_e_given_x = p_x_given_e + np.log(prior())
+            p_s_given_x = p_x_given_s + np.log(prior())
+            p_j_given_x = p_x_given_j + np.log(prior())
+
+            language_posteriors = [p_e_given_x, p_s_given_x, p_j_given_x]
+            language_names = ['English', 'Spanish', 'Japanese']
+
+            print('x is most likely', language_names[language_posteriors.index(max(language_posteriors))])
+
+
+
 
 #setup()
 #p1()
@@ -167,3 +230,4 @@ def p7():
 #p5()
 #p6()
 #p7()
+p8()
