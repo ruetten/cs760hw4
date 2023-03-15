@@ -61,68 +61,68 @@ def calc_likelihood_of_x_given_lang(x, lang_probability_vector):
 ################################################################################
 
 def p1():
-    e10 = read_in_language_files('e', 0, 9)
-    s10 = read_in_language_files('s', 0, 9)
-    j10 = read_in_language_files('j', 0, 9)
+    e09 = read_in_language_files('e', 0, 9)
+    s09 = read_in_language_files('s', 0, 9)
+    j09 = read_in_language_files('j', 0, 9)
 
     print(['space']+[chr(ord('a') + i) for i in range(0,26)])
-    print(get_lang_histogram(e10))
-    print(get_lang_histogram(s10))
-    print(get_lang_histogram(j10))
+    print(get_lang_histogram(e09))
+    print(get_lang_histogram(s09))
+    print(get_lang_histogram(j09))
 
 def p2():
-    e10 = read_in_language_files('e', 0, 9)
+    e09 = read_in_language_files('e', 0, 9)
 
-    print(len(e10))
-    print(np.sum(get_lang_histogram(e10)))
+    print(len(e09))
+    print(np.sum(get_lang_histogram(e09)))
 
-    print_latex_tabular(get_lang_histogram(e10))
+    print_latex_tabular(get_lang_histogram(e09))
 
-    for p in get_class_conditional_probability_vector(get_lang_histogram(e10)):
+    for p in get_class_conditional_probability_vector(get_lang_histogram(e09)):
         print(np.round(p, 4), end=', ')
     print()
 
 def p3():
-    s10 = read_in_language_files('s', 0, 9)
-    j10 = read_in_language_files('j', 0, 9)
+    s09 = read_in_language_files('s', 0, 9)
+    j09 = read_in_language_files('j', 0, 9)
 
     print('SPANISH')
-    for p in get_class_conditional_probability_vector(get_lang_histogram(s10)):
+    for p in get_class_conditional_probability_vector(get_lang_histogram(s09)):
         print(np.round(p, 4), end=', ')
     print()
     print()
 
     print('JAPANESE')
-    for p in get_class_conditional_probability_vector(get_lang_histogram(j10)):
+    for p in get_class_conditional_probability_vector(get_lang_histogram(j09)):
         print(np.round(p, 4), end=', ')
     print()
     print()
 
 def p4():
-    e10txt = read_in_language_files('e', 10, 10) # only e10.txt
-    print(get_lang_histogram(e10txt))
+    e10 = read_in_language_files('e', 10, 10) # only e10.txt
+    print(get_lang_histogram(e10))
 
 def p5():
-    e10 = read_in_language_files('e', 0, 9)
-    s10 = read_in_language_files('s', 0, 9)
-    j10 = read_in_language_files('j', 0, 9)
+    e09 = read_in_language_files('e', 0, 9)
+    s09 = read_in_language_files('s', 0, 9)
+    j09 = read_in_language_files('j', 0, 9)
 
     x = read_in_language_files('e', 10, 10) # only e10.txt
 
     print('ENGLISH')
-    for p in get_class_conditional_probability_vector(get_lang_histogram(e10)):
+    for p in get_class_conditional_probability_vector(get_lang_histogram(e09)):
         print(np.round(p, 4), end=', ')
     print()
     print()
 
     print('SPANISH')
-    for p in get_class_conditional_probability_vector(get_lang_histogram(s10)):
+    for p in get_class_conditional_probability_vector(get_lang_histogram(s09)):
         print(np.round(p, 4), end=', ')
     print()
     print()
 
     print('JAPANESE')
-    for p in get_class_conditional_probability_vector(get_lang_histogram(j10)):
+    for p in get_class_conditional_probability_vector(get_lang_histogram(j09)):
         print(np.round(p, 4), end=', ')
     print()
     print()
@@ -133,13 +133,13 @@ def p5():
     print()
 
     print('p(x|y=e)')
-    p_x_given_e = calc_likelihood_of_x_given_lang(x, get_class_conditional_probability_vector(get_lang_histogram(e10)))
+    p_x_given_e = calc_likelihood_of_x_given_lang(x, get_class_conditional_probability_vector(get_lang_histogram(e09)))
     print(p_x_given_e)
     print('p(x|y=s)')
-    p_x_given_s = calc_likelihood_of_x_given_lang(x, get_class_conditional_probability_vector(get_lang_histogram(s10)))
+    p_x_given_s = calc_likelihood_of_x_given_lang(x, get_class_conditional_probability_vector(get_lang_histogram(s09)))
     print(p_x_given_s)
     print('p(x|y=j)')
-    p_x_given_j = calc_likelihood_of_x_given_lang(x, get_class_conditional_probability_vector(get_lang_histogram(j10)))
+    p_x_given_j = calc_likelihood_of_x_given_lang(x, get_class_conditional_probability_vector(get_lang_histogram(j09)))
     print(p_x_given_j)
 
     language_likelihoods = [p_x_given_e, p_x_given_s, p_x_given_j]
@@ -147,8 +147,17 @@ def p5():
 
     print('assuming all the same priors, x is most likely', language_names[language_likelihoods.index(max(language_likelihoods))])
 
-def p6()
+def p6():
     pass
+
+def p7():
+    e09 = read_in_language_files('e', 0, 9)
+    s09 = read_in_language_files('s', 0, 9)
+    j09 = read_in_language_files('j', 0, 9)
+
+    e1019 = read_in_language_files('e', 10, 19)
+    s1019 = read_in_language_files('s', 10, 19)
+    j1019 = read_in_language_files('j', 10, 19)
 
 #setup()
 #p1()
@@ -156,4 +165,5 @@ def p6()
 #p3()
 #p4()
 #p5()
-p6()
+#p6()
+#p7()
