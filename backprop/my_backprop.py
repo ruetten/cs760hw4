@@ -30,7 +30,7 @@ W1 = np.random.random((d1, d)) * 2 - 1
 W2 = np.random.random((d2, d1)) * 2 - 1
 W3 = np.random.random((k, d2)) * 2 - 1
 
-#X.shape, y.shape, W1.shape, W2.shape, W3.shape
+#print(X.shape, y.shape, W1.shape, W2.shape, W3.shape)
 
 # Functions
 def sigmoid(z):
@@ -119,3 +119,72 @@ print(np.count_nonzero(prediction == y_test.T) / len(X_test))
 # plt.ylabel('Accuracy')
 # plt.xlabel('Iteration (100s)')
 # plt.show()
+
+
+### My implementation that I attempted with element-wise operations
+### Ended up being really slow and no different performance than the other
+# W1 = np.random.random((d1, d)) * 2 - 1
+# W2 = np.random.random((d2, d1)) * 2 - 1
+# W3 = np.random.random((k, d2)) * 2 - 1
+# for iteration in range(0, 5000):
+#   idx = np.random.randint(0, len(X), size=batch_size)
+#
+#   a1, a2, yhat = feedforwardnetwork(X[idx], W1, W2, W3)
+#   y_true = np.array([vectorize_y(yi) for yi in y[idx]])
+#
+#   # Third layer
+#   delta3 = yhat - y_true
+#
+#   dL_dW3 = np.zeros((k, d2))
+#   for i in range(k):
+#     for j in range(d2):
+#       dL_dW3[i, j] = delta3[0][i] * a2[0][j]
+#
+#   # Second layer
+#   temp = np.zeros((k, d2))
+#   for i in range(k):
+#     for j in range(d2):
+#       temp[i][j] =  W3[i][j] * delta3[0][i]
+#
+#   sum = np.zeros((1, d2))
+#   for n in range(k):
+#     sum = sum + temp[n]
+#
+#   delta2 = sum * (a2 * (1 - a2))
+#
+#   dL_dW2 = np.zeros((d2, d1))
+#   for i in range(d2):
+#     for j in range(d1):
+#       dL_dW2[i, j] = delta2[0][i] * a1[0][j]
+#
+#   # First layer
+#   temp = np.zeros((d2, d1))
+#   for i in range(d2):
+#     for j in range(d1):
+#       temp[i][j] =  W2[i][j] * delta2[0][i]
+#
+#   sum = np.zeros((1, d1))
+#   for n in range(d2):
+#     sum = sum + temp[n]
+#
+#   delta1 = sum * (a1 * (1 - a1))
+#
+#   dL_dW1 = np.zeros((d1, d))
+#   for i in range(d1):
+#     for j in range(d):
+#       dL_dW1[i, j] = delta1[0][i] * X[0][j]
+#
+#   W3 = W3 - α * dL_dW3
+#   W2 = W2 - α * dL_dW2
+#   W1 = W1 - α * dL_dW1
+#
+#   if iteration % 10 == 0:
+#     #L = -np.sum(y_true*np.log(yhat))
+#     L = np.average([-np.sum(loss) for loss in (y_true*np.log(yhat))])
+#     a1, a2, yhat = feedforwardnetwork(X[:100], W1, W2, W3)
+#     prediction = np.array([np.argmax(yhat_i) for yhat_i in yhat])
+#     #print(prediction ==  y[:100])
+#     # print(prediction)
+#     # print(y[:100].T)
+#     print(L, end=' ')
+#     print(np.count_nonzero(prediction == y[:100].T) / 100)
