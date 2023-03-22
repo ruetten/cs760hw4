@@ -4,6 +4,7 @@ import torchvision.datasets as datasets
 from torchvision import transforms
 from PIL import Image
 import numpy as np
+#import matplotlib.pyplot as plt
 
 mnist_trainset = datasets.MNIST(root='./data', train=True, download=True, transform=None)
 mnist_testset = datasets.MNIST(root='./data', train=False, download=True, transform=None)
@@ -32,7 +33,8 @@ def sigmoid(z):
   return 1 / (1 + np.exp(z))
 
 def softmax(z):
-  return np.exp(z) / np.sum(np.exp(z))
+ e = np.exp(z)
+ return e / e.sum()
 
 def vectorize_y(yi):
   z = np.zeros(k)
@@ -40,15 +42,16 @@ def vectorize_y(yi):
   return z
 
 def feedforwardnetwork(X, W1, W2, W3):
-  #print(W1.shape, X.shape)
   z1 = np.matmul(W1, X.T).T
   a1 = sigmoid(z1)
-  #print(W2.shape, a1.shape)
   z2 = np.matmul(W2, a1.T).T
   a2 = sigmoid(z2)
-  #print(W3.shape, a2.shape)
   z3 = np.matmul(W3, a2.T).T
-  yhat = softmax(z3)
+
+  yhat = np.zeros((z3.shape))
+  for z3i in range(len(z3)):
+    yhat[z3i] = softmax(z3[z3i])
+
   return a1, a2, yhat
 
 # hyper-parameters
@@ -59,38 +62,60 @@ W1 = np.random.random((d1, d)) * 2 - 1
 W2 = np.random.random((d2, d1)) * 2 - 1
 W3 = np.random.random((k, d2)) * 2 - 1
 
-for i in range(0, 50000):
+# Train network
+iterations = 10000
+accuracies = np.zeros(int(iterations / 100))
+losses = np.zeros(int(iterations / 100))
+
+for itr in range(iterations):
   idx = np.random.randint(0, len(X), size=batch_size)
 
+  # Feed forward to get yhat and one-hot version of y
   a1, a2, yhat = feedforwardnetwork(X[idx], W1, W2, W3)
   y_true = np.array([vectorize_y(yi) for yi in y[idx]])
 
+  # Third layer back prop
   delta3 = yhat - y_true
   dL_dW3 = (delta3.T @ a2) / batch_size
 
+  # Second layer back prop
   delta2 = (delta3 @ W3) * (a2 * (1 - a2))
   dL_dW2 = (delta2.T @ a1) / batch_size
 
+  # First layer back prop
   delta1 = (delta2 @ W2) * (a1 * (1 - a1))
   dL_dW1 = (delta1.T @ X[idx]) / batch_size
 
+  # Weight updates
   W3 = W3 - α * dL_dW3
   W2 = W2 - α * dL_dW2
   W1 = W1 - α * dL_dW1
 
-  if i % 100 == 0:
-    #L = -np.sum(y_true*np.log(yhat))
+  # Every 100 iterations, print out current stats:
+  if itr % 100 == 0:
     L = np.average([-np.sum(loss) for loss in (y_true*np.log(yhat))])
-    a1, a2, yhat = feedforwardnetwork(X[:100], W1, W2, W3)
-    prediction = np.array([np.argmax(yhat_i) for yhat_i in yhat])
-    #print(prediction ==  y[:100])
-    print(prediction)
-    print(y[:100].T)
-    print(L, end=' ')
-    print(np.count_nonzero(prediction == y[:100].T) / 100)
+    losses[int(itr / 100)] = L
+    print('Loss:', L, end=' \t')
 
-a1, a2, yhat = feedforwardnetwork(X,W1,W2, W3)
+    a1, a2, yhat = feedforwardnetwork(X_test, W1, W2, W3)
+    prediction = np.array([np.argmax(yhat_i) for yhat_i in yhat])
+    acc = np.count_nonzero(prediction == y_test.T) / len(X_test)
+    print('Acc on test:', acc)
+    accuracies[int(itr / 100)] = acc
+
+# Test network on test data
+a1, a2, yhat = feedforwardnetwork(X_test, W1, W2, W3)
 prediction = np.array([np.argmax(yhat_i) for yhat_i in yhat])
-print(prediction)
-print(y.T)
-np.count_nonzero(prediction == y.T) / 100
+print(np.count_nonzero(prediction == y_test.T) / len(X_test))
+
+# plt.plot(losses)
+# plt.title('Learning curve: Loss over time')
+# plt.ylabel('Loss')
+# plt.xlabel('Iteration (100s)')
+# plt.show()
+#
+# plt.plot(accuracies)
+# plt.title('Accuracy on test-set over time')
+# plt.ylabel('Accuracy')
+# plt.xlabel('Iteration (100s)')
+# plt.show()
