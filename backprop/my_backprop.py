@@ -6,9 +6,11 @@ from PIL import Image
 import numpy as np
 #import matplotlib.pyplot as plt
 
+# Get the MNIST dataset
 mnist_trainset = datasets.MNIST(root='./data', train=True, download=True, transform=None)
 mnist_testset = datasets.MNIST(root='./data', train=False, download=True, transform=None)
 
+# Perform some type gymnastics to get the data into the format that I want
 X_train = np.array([np.array(datapoint[0]).reshape(784) for datapoint in mnist_trainset])
 y_train = np.array([np.array(datapoint[1]) for datapoint in mnist_trainset])
 
@@ -18,6 +20,7 @@ y_test = np.array([np.array(datapoint[1]) for datapoint in mnist_testset])
 X = X_train
 y = y_train.reshape((len(y_train), 1))
 
+# Define dimensions of my weights and such
 d = X.shape[1]
 d1 = 300
 d2 = 200
@@ -27,8 +30,9 @@ W1 = np.random.random((d1, d)) * 2 - 1
 W2 = np.random.random((d2, d1)) * 2 - 1
 W3 = np.random.random((k, d2)) * 2 - 1
 
-X.shape, y.shape, W1.shape, W2.shape, W3.shape
+#X.shape, y.shape, W1.shape, W2.shape, W3.shape
 
+# Functions
 def sigmoid(z):
   return 1 / (1 + np.exp(z))
 
@@ -58,10 +62,6 @@ def feedforwardnetwork(X, W1, W2, W3):
 α = 0.005
 batch_size = 8
 
-W1 = np.random.random((d1, d)) * 2 - 1
-W2 = np.random.random((d2, d1)) * 2 - 1
-W3 = np.random.random((k, d2)) * 2 - 1
-
 # Train network
 iterations = 10000
 accuracies = np.zeros(int(iterations / 100))
@@ -76,7 +76,7 @@ for itr in range(iterations):
 
   # Third layer back prop
   delta3 = yhat - y_true
-  dL_dW3 = (delta3.T @ a2) / batch_size
+  dL_dW3 = (delta3.T @ a2) / batch_size # divide by batch size in order to get average over all examples
 
   # Second layer back prop
   delta2 = (delta3 @ W3) * (a2 * (1 - a2))
